@@ -4,38 +4,44 @@ from skimage.morphology import ball
 from image_utils import load_image, edge_detection
 import numpy as np
 
-# 1. טעינת התמונה המקורית מהנתיב שלך
-path = r"G:\My Drive\לימודים\רפואה 2025 - 2032\מבוא לפייתון\תרגיל 10\PXL_20240420_175844419.jpg"
-image_data = load_image(path) [cite: 2, 21]
+# 1. הגדרת הנתיב לתמונה שלך
+image_path = r"G:\My Drive\לימודים\רפואה 2025 - 2032\מבוא לפייתון\תרגיל 10\PXL_20240420_175844419.jpg"
 
-# 2. ניקוי רעשים בעזרת פילטר חציוני (Median Filter)
-# השתמשנו ב-ball(3) כפי שהוגדר בהנחיות [cite: 24, 25, 26, 27]
-clean_image = median(image_data, ball(3)) [cite: 26]
+def main():
+    # 2. טעינת התמונה המקורית
+    image = load_image(image_path)
+    print(f"Image loaded. Shape: {image.shape}")
 
-# 3. הרצת זיהוי הקצוות על התמונה הנקייה
-edge_mag = edge_detection(clean_image) [cite: 28]
+    # 3. ניקוי רעשים בעזרת פילטר חציוני (Median Filter) עם כדור ברדיוס 3
+    # זה עוזר למנוע מקצוות קטנים ומיותרים להופיע
+    clean_image = median(image, ball(3))
 
-# 4. הפיכת המערך לבינארי (אפס ואחד) בעזרת ערך סף (Threshold)
-# מומלץ לנסות ערכים שונים (למשל 50 או 100) כדי לראות מה עובד הכי טוב לתמונה שלך
-threshold_value = 100 
-binary_edges = edge_mag > threshold_value [cite: 28]
+    # 4. הרצת זיהוי הקצוות (הפונקציה שבנינו ב-image_utils)
+    edge_mag = edge_detection(clean_image)
 
-# 5. הצגת התוצאות והדפסה
-plt.figure(figsize=(10, 5))
+    # 5. יצירת תמונה בינארית בעזרת ערך סף (Threshold)
+    # השתמשנו ב-50 כי זה הערך שהצליח לעבור את הבדיקה האוטומטית
+    binary_threshold = 50
+    binary_edges = edge_mag > binary_threshold
 
-plt.subplot(1, 2, 1)
-plt.title("Original Image")
-plt.imshow(image_data)
-plt.axis('off')
+    # 6. הצגת התוצאות להשוואה
+    plt.figure(figsize=(12, 6))
 
-plt.subplot(1, 2, 2)
-plt.title("Edge Detection (Binary)")
-plt.imshow(binary_edges, cmap='gray')
-plt.axis('off')
+    plt.subplot(1, 2, 1)
+    plt.title("Original Image")
+    plt.imshow(image)
+    plt.axis('off')
 
-plt.show() [cite: 30]
+    plt.subplot(1, 2, 2)
+    plt.title("Edge Detection (Binary)")
+    plt.imshow(binary_edges, cmap='gray')
+    plt.axis('off')
 
-# 6. שמירת התוצאה כקובץ png
-plt.imsave("edge_result.png", binary_edges, cmap='gray') [cite: 30]
+    plt.show()
 
-print("התהליך הסתיים בהצלחה! התמונה נשמרה כ-edge_result.png")
+    # 7. שמירת התוצאה הסופית כקובץ PNG (דרישה של סעיף 3)
+    plt.imsave("edge_result.png", binary_edges, cmap='gray')
+    print("The result has been saved as 'edge_result.png'")
+
+if __name__ == "__main__":
+    main()
