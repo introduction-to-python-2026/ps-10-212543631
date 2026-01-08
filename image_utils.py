@@ -1,22 +1,22 @@
 from PIL import Image
 import numpy as np
-from scipy import ndimage
+from scipy import ndimage # שימוש בספרייה המדויקת לפי ההנחיות 
 
 def load_image(image_path):
     """
-    1. טעינת תמונת צבע והפיכתה למערך NumPy[cite: 2].
+    1. כתיבת פונקציה המקבלת מיקום תמונה ומחזירה מערך NumPy[cite: 2].
     """
     img = Image.open(image_path)
     return np.array(img)
 
 def edge_detection(img_array):
     """
-    2. זיהוי קצוות בתמונה לפי שלבי התרגיל[cite: 3].
+    2. פונקציה המדגישה את הקצוות בתמונה לפי שלבי התרגיל[cite: 3].
     """
-    # א. הפיכה לתמונה אפורה על-ידי מיצוע ערוצי הצבע [cite: 6, 7]
+    # א. הפיכת המערך לתמונה אפורה על-ידי מיצוע ערכי הצבע [cite: 6, 7]
     gray_img = np.mean(img_array, axis=2)
     
-    # ב. בניית הפילטרים האנכי והאופקי [cite: 8, 9, 10]
+    # ב. בניית פילטרים לזיהוי שינויים באנכי ובאופקי [cite: 8, 9, 10]
     kernelY = np.array([[ 1,  2,  1],
                         [ 0,  0,  0],
                         [-1, -2, -1]])
@@ -25,17 +25,13 @@ def edge_detection(img_array):
                         [ 2,  0, -2],
                         [ 1,  0, -1]])
     
-    # ג. ביצוע קונבולוציה בעזרת scipy.ndimage.convolve 
-    # הגדרת mode='constant' ו-cval=0 מבצעת padding=0 
-    # הפעולה שומרת על אורך ורוחב מקוריים 
-    edgeY = ndimage.convolve(gray_img, kernelY, mode='constant', cval=0.0)
-    edgeX = ndimage.convolve(gray_img, kernelX, mode='same', boundary='fill', fillvalue=0) # השורה הזו שונתה למטה לתיקון
-    
-    # תיקון: שתי הפעולות חייבות להשתמש באותו סוג של קונבולוציה
+    # ג. הפעלת הקונבולוציה בעזרת scipy.ndimage 
+    # הגדרת mode='constant' ו-cval=0 מבצעת בדיוק padding=0 
+    # פעולה זו שומרת על אורך ורוחב מקוריים 
     edgeY = ndimage.convolve(gray_img, kernelY, mode='constant', cval=0.0)
     edgeX = ndimage.convolve(gray_img, kernelX, mode='constant', cval=0.0)
     
-    # ד. חישוב עוצמת הקצוות (Magnitude) [cite: 18, 19]
+    # ד. חישוב עוצמת הקצוות לפי הנוסחה המשולבת 
     edgeMAG = np.sqrt(edgeX**2 + edgeY**2)
     
     return edgeMAG
